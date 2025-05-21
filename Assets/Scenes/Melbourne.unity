@@ -151,59 +151,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1702194827}
+  - {fileID: 716743449}
+  - {fileID: 1033361897}
+  - {fileID: 1901531918}
+  - {fileID: 1578246688}
+  - {fileID: 810876296}
+  - {fileID: 252211336}
+  - {fileID: 1575899265}
+  - {fileID: 1902373220}
+  - {fileID: 1671143183}
+  - {fileID: 1057863462}
+  - {fileID: 307748570}
+  - {fileID: 1173024799}
+  - {fileID: 1688673712}
+  - {fileID: 521559099}
+  - {fileID: 680520871}
+  - {fileID: 729898425}
+  - {fileID: 885649536}
+  - {fileID: 586328983}
+  - {fileID: 453181912}
+  - {fileID: 674692147}
+  - {fileID: 1216072406}
+  - {fileID: 239526337}
+  - {fileID: 62264862}
+  - {fileID: 373215851}
+  - {fileID: 2071437725}
+  - {fileID: 1231590066}
+  - {fileID: 554074988}
+  - {fileID: 1608927313}
+  - {fileID: 1003564952}
+  - {fileID: 48057210}
+  - {fileID: 782894730}
+  - {fileID: 986432271}
+  - {fileID: 1790603749}
+  - {fileID: 960668471}
+  - {fileID: 1133178874}
+  - {fileID: 1351620148}
+  - {fileID: 232513029}
+  - {fileID: 1594140377}
+  - {fileID: 1356364339}
+  - {fileID: 464046036}
+  - {fileID: 771751507}
+  - {fileID: 1853634021}
+  - {fileID: 1473486082}
+  - {fileID: 1087292900}
+  - {fileID: 2084040432}
+  - {fileID: 108526652}
   baseLapTime: 10
   tireType: 1
   raceLap: 0
@@ -220,7 +214,7 @@ Transform:
   m_GameObject: {fileID: 3418688}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.41, y: -1.28, z: 0}
+  m_LocalPosition: {x: 1.3999999, y: -3.57, z: 0}
   m_LocalScale: {x: 1.327, y: 1.327, z: 1.327}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -475,9 +469,10 @@ GameObject:
   m_Component:
   - component: {fileID: 108526652}
   - component: {fileID: 108526653}
+  - component: {fileID: 108526654}
   m_Layer: 0
   m_Name: Waypoint_0 (46)
-  m_TagString: Untagged
+  m_TagString: Pit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -552,6 +547,52 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &108526654
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108526651}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.21133333}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.28866667}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &215049219
 GameObject:
   m_ObjectHideFlags: 0
@@ -584,59 +625,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1702194827}
+  - {fileID: 716743449}
+  - {fileID: 1033361897}
+  - {fileID: 1901531918}
+  - {fileID: 1578246688}
+  - {fileID: 810876296}
+  - {fileID: 252211336}
+  - {fileID: 1575899265}
+  - {fileID: 1902373220}
+  - {fileID: 1671143183}
+  - {fileID: 1057863462}
+  - {fileID: 307748570}
+  - {fileID: 1173024799}
+  - {fileID: 1688673712}
+  - {fileID: 521559099}
+  - {fileID: 680520871}
+  - {fileID: 729898425}
+  - {fileID: 885649536}
+  - {fileID: 586328983}
+  - {fileID: 453181912}
+  - {fileID: 674692147}
+  - {fileID: 1216072406}
+  - {fileID: 239526337}
+  - {fileID: 62264862}
+  - {fileID: 373215851}
+  - {fileID: 2071437725}
+  - {fileID: 1231590066}
+  - {fileID: 554074988}
+  - {fileID: 1608927313}
+  - {fileID: 1003564952}
+  - {fileID: 48057210}
+  - {fileID: 782894730}
+  - {fileID: 986432271}
+  - {fileID: 1790603749}
+  - {fileID: 960668471}
+  - {fileID: 1133178874}
+  - {fileID: 1351620148}
+  - {fileID: 232513029}
+  - {fileID: 1594140377}
+  - {fileID: 1356364339}
+  - {fileID: 464046036}
+  - {fileID: 771751507}
+  - {fileID: 1853634021}
+  - {fileID: 1473486082}
+  - {fileID: 1087292900}
+  - {fileID: 2084040432}
+  - {fileID: 108526652}
   baseLapTime: 10
   tireType: 0
   raceLap: 0
@@ -653,7 +688,7 @@ Transform:
   m_GameObject: {fileID: 215049219}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.41, y: -1.28, z: 0}
+  m_LocalPosition: {x: 1.4, y: -3.57, z: 0}
   m_LocalScale: {x: 1.327, y: 1.327, z: 1.327}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1278,59 +1313,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1702194827}
+  - {fileID: 716743449}
+  - {fileID: 1033361897}
+  - {fileID: 1901531918}
+  - {fileID: 1578246688}
+  - {fileID: 810876296}
+  - {fileID: 252211336}
+  - {fileID: 1575899265}
+  - {fileID: 1902373220}
+  - {fileID: 1671143183}
+  - {fileID: 1057863462}
+  - {fileID: 307748570}
+  - {fileID: 1173024799}
+  - {fileID: 1688673712}
+  - {fileID: 521559099}
+  - {fileID: 680520871}
+  - {fileID: 729898425}
+  - {fileID: 885649536}
+  - {fileID: 586328983}
+  - {fileID: 453181912}
+  - {fileID: 674692147}
+  - {fileID: 1216072406}
+  - {fileID: 239526337}
+  - {fileID: 62264862}
+  - {fileID: 373215851}
+  - {fileID: 2071437725}
+  - {fileID: 1231590066}
+  - {fileID: 554074988}
+  - {fileID: 1608927313}
+  - {fileID: 1003564952}
+  - {fileID: 48057210}
+  - {fileID: 782894730}
+  - {fileID: 986432271}
+  - {fileID: 1790603749}
+  - {fileID: 960668471}
+  - {fileID: 1133178874}
+  - {fileID: 1351620148}
+  - {fileID: 232513029}
+  - {fileID: 1594140377}
+  - {fileID: 1356364339}
+  - {fileID: 464046036}
+  - {fileID: 771751507}
+  - {fileID: 1853634021}
+  - {fileID: 1473486082}
+  - {fileID: 1087292900}
+  - {fileID: 2084040432}
+  - {fileID: 108526652}
   baseLapTime: 10
   tireType: 2
   raceLap: 0
@@ -1347,7 +1376,7 @@ Transform:
   m_GameObject: {fileID: 422378762}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.41, y: -1.28, z: 0}
+  m_LocalPosition: {x: 1.3999999, y: -3.57, z: 0}
   m_LocalScale: {x: 1.327, y: 1.327, z: 1.327}
   m_ConstrainProportionsScale: 0
   m_Children:
