@@ -6,6 +6,7 @@ TagManager:
   tags:
   - StartFinishLine
   - Pit
+  - Waypoints
   layers:
   - Default
   - TransparentFX

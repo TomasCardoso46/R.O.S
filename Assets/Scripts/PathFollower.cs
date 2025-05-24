@@ -34,9 +34,20 @@ public class PathFollower : MonoBehaviour
     private float tireDegradationPenalty = 0;
     private float adjustedLapTime;
 
-
     void Start()
     {
+        // Auto-assign waypoints from a tagged GameObject
+        GameObject waypointContainer = GameObject.FindGameObjectWithTag("Waypoints");
+        if (waypointContainer != null)
+        {
+            int count = waypointContainer.transform.childCount;
+            waypoints = new Transform[count];
+            for (int i = 0; i < count; i++)
+            {
+                waypoints[i] = waypointContainer.transform.GetChild(i);
+            }
+        }
+
         if (waypoints == null || waypoints.Length < 2)
         {
             Debug.LogWarning("Not enough waypoints set for PathFollower.");
@@ -54,16 +65,17 @@ public class PathFollower : MonoBehaviour
             segmentLengths[i] = segmentLength;
             totalDistance += segmentLength;
         }
+
         adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType);
         noDegSpeed = totalDistance / adjustedLapTime;
         speed = noDegSpeed;
-
     }
 
     void Update()
     {
         adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType);
         noDegSpeed = totalDistance / adjustedLapTime;
+
         if (waypoints == null || waypoints.Length < 2) return;
 
         Transform nextWaypoint = waypoints[(currentIndex + 1) % waypoints.Length];
@@ -75,7 +87,6 @@ public class PathFollower : MonoBehaviour
         {
             currentIndex = (currentIndex + 1) % waypoints.Length;
         }
-
     }
 
     float GetLapTimeModifier(TireType type)
@@ -107,10 +118,9 @@ public class PathFollower : MonoBehaviour
             raceLap++;
             Debug.Log("Race Lap Count: " + raceLap);
             tireLap++;
-            Debug.Log("Tire Lap Count:" + tireLap);
+            Debug.Log("Tire Lap Count: " + tireLap);
 
             tireDegradationPenalty += GetDegradationModifier(tireType);
-
             speed = noDegSpeed - tireDegradationPenalty;
         }
 
@@ -133,5 +143,23 @@ public class PathFollower : MonoBehaviour
         StartCoroutine(Stop(pitTime));
         tireType = tireSet;
         tireDegradationPenalty = 0;
+    }
+
+    public void SoftTires()
+    {
+        pitTire = TireType.Soft;
+        pitRequested = true;
+    }
+
+    public void MediumTires()
+    {
+        pitTire = TireType.Medium;
+        pitRequested = true;
+    }
+
+    public void HardTires()
+    {
+        pitTire = TireType.Hard;
+        pitRequested = true;
     }
 }
