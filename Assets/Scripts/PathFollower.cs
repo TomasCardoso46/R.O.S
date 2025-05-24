@@ -34,7 +34,7 @@ public class PathFollower : MonoBehaviour
     private float tireDegradationPenalty = 0;
     private float adjustedLapTime;
 
-    void Start()
+    void Awake()
     {
         // Auto-assign waypoints from a tagged GameObject
         GameObject waypointContainer = GameObject.FindGameObjectWithTag("Waypoints");
