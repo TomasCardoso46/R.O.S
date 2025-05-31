@@ -87,15 +87,30 @@ public class PathFollower : MonoBehaviour
         {
             currentIndex = (currentIndex + 1) % waypoints.Length;
         }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            SoftTires();
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            MediumTires();
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            HardTires();
+        }
     }
 
     float GetLapTimeModifier(TireType type)
     {
         switch (type)
         {
-            case TireType.Soft: return -1f;
+            case TireType.Soft: return -0.45f;
             case TireType.Medium: return 0f;
-            case TireType.Hard: return 1f;
+            case TireType.Hard: return 0.45f;
             default: return 0f;
         }
     }
@@ -104,15 +119,22 @@ public class PathFollower : MonoBehaviour
     {
         switch (type)
         {
-            case TireType.Soft: return 0.3f;
-            case TireType.Medium: return 0.2f;
-            case TireType.Hard: return 0.1f;
+            case TireType.Soft: return 0.003f;
+            case TireType.Medium: return 0.002f;
+            case TireType.Hard: return 0.001f;
             default: return 0.3f;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Checkpoint"))
+        {
+            tireDegradationPenalty += GetDegradationModifier(tireType);
+            speed = noDegSpeed - tireDegradationPenalty;
+        }
+        
         if (other.CompareTag("StartFinishLine"))
         {
             raceLap++;
@@ -120,9 +142,11 @@ public class PathFollower : MonoBehaviour
             tireLap++;
             Debug.Log("Tire Lap Count: " + tireLap);
 
-            tireDegradationPenalty += GetDegradationModifier(tireType);
-            speed = noDegSpeed - tireDegradationPenalty;
+            //tireDegradationPenalty += GetDegradationModifier(tireType);
+            //speed = noDegSpeed - tireDegradationPenalty;
         }
+
+
 
         if (other.CompareTag("Pit") && pitRequested)
         {

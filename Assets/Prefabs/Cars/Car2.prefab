@@ -229,7 +229,7 @@ MonoBehaviour:
   tireLap: 0
   pitRequested: 0
   pitTire: 1
-  pitTime: 2
+  pitTime: 5
 --- !u!58 &4233474979611077429
 CircleCollider2D:
   m_ObjectHideFlags: 0
