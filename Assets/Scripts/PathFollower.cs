@@ -134,7 +134,7 @@ public class PathFollower : MonoBehaviour
             tireDegradationPenalty += GetDegradationModifier(tireType);
             speed = noDegSpeed - tireDegradationPenalty;
         }
-        
+
         if (other.CompareTag("StartFinishLine"))
         {
             raceLap++;
@@ -146,9 +146,19 @@ public class PathFollower : MonoBehaviour
             //speed = noDegSpeed - tireDegradationPenalty;
         }
 
+        else if (other.CompareTag("BreakingPoint"))
+        {
+            speed = speed / 2;
+        }
+
+        else if (other.CompareTag("CornerExit"))
+        {
+            speed = noDegSpeed - tireDegradationPenalty;
+        }
 
 
-        if (other.CompareTag("Pit") && pitRequested)
+
+        else if (other.CompareTag("Pit") && pitRequested)
         {
             PitStop(pitTire);
             pitRequested = false;

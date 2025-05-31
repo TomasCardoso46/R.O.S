@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 3941848875833741782}
   m_Layer: 6
   m_Name: Waypoint_0 (43)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -369,7 +369,7 @@ GameObject:
   - component: {fileID: 1113318397180921940}
   m_Layer: 6
   m_Name: Waypoint_0 (3)
-  m_TagString: Untagged
+  m_TagString: CornerExit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -383,7 +383,7 @@ Transform:
   m_GameObject: {fileID: 242749024593867540}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.27, y: -2.28, z: 0}
+  m_LocalPosition: {x: -7.21, y: -2.1, z: 0}
   m_LocalScale: {x: 0.38578326, y: 0.38578326, z: 0.38578326}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -503,7 +503,7 @@ GameObject:
   - component: {fileID: 3814584638697875687}
   m_Layer: 6
   m_Name: Waypoint_0 (19)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -637,7 +637,7 @@ GameObject:
   - component: {fileID: 4383522260191354427}
   m_Layer: 6
   m_Name: Waypoint_0 (17)
-  m_TagString: Untagged
+  m_TagString: CornerExit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -771,7 +771,7 @@ GameObject:
   - component: {fileID: 7230956546959521541}
   m_Layer: 6
   m_Name: Waypoint_0 (24)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1039,7 +1039,7 @@ GameObject:
   - component: {fileID: 8328979233320952456}
   m_Layer: 6
   m_Name: Waypoint_0 (41)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1173,7 +1173,7 @@ GameObject:
   - component: {fileID: 5346425053393925319}
   m_Layer: 6
   m_Name: Waypoint_0 (16)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1441,7 +1441,7 @@ GameObject:
   - component: {fileID: 543467341969575956}
   m_Layer: 6
   m_Name: Waypoint_0 (15)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1723,7 +1723,7 @@ Transform:
   m_GameObject: {fileID: 1540825576492049360}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.71, y: -0.94, z: 0}
+  m_LocalPosition: {x: 7.74, y: -0.55, z: 0}
   m_LocalScale: {x: 0.38578326, y: 0.38578326, z: 0.38578326}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1977,7 +1977,7 @@ GameObject:
   - component: {fileID: 6829398354502712285}
   m_Layer: 6
   m_Name: Waypoint_0 (13)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2111,7 +2111,7 @@ GameObject:
   - component: {fileID: 6880846549157997675}
   m_Layer: 6
   m_Name: Waypoint_0 (38)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2513,7 +2513,7 @@ GameObject:
   - component: {fileID: 2735881634859575708}
   m_Layer: 6
   m_Name: Waypoint_0 (1)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2729,7 +2729,7 @@ GameObject:
   - component: {fileID: 9003799684697317677}
   m_Layer: 6
   m_Name: Waypoint_0 (37)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2863,7 +2863,7 @@ GameObject:
   - component: {fileID: 1114736381272354590}
   m_Layer: 6
   m_Name: Waypoint_0 (39)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3131,7 +3131,7 @@ GameObject:
   - component: {fileID: 2249080009868438795}
   m_Layer: 6
   m_Name: Waypoint_0 (45)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3399,7 +3399,7 @@ GameObject:
   - component: {fileID: 6349727637271300440}
   m_Layer: 6
   m_Name: Waypoint_0 (33)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3533,7 +3533,7 @@ GameObject:
   - component: {fileID: 1322429483928070881}
   m_Layer: 6
   m_Name: Waypoint_0 (14)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3935,7 +3935,7 @@ GameObject:
   - component: {fileID: 7369173832343608182}
   m_Layer: 6
   m_Name: Waypoint_0 (2)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4471,7 +4471,7 @@ GameObject:
   - component: {fileID: 8076244022416630930}
   m_Layer: 6
   m_Name: Waypoint_0 (44)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5811,7 +5811,7 @@ GameObject:
   - component: {fileID: 8823908243045001419}
   m_Layer: 6
   m_Name: Waypoint_0 (32)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6213,7 +6213,7 @@ GameObject:
   - component: {fileID: 1682638509212470767}
   m_Layer: 6
   m_Name: Waypoint_0 (18)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6615,7 +6615,7 @@ GameObject:
   - component: {fileID: 5538588922717427296}
   m_Layer: 6
   m_Name: Waypoint_0 (5)
-  m_TagString: Untagged
+  m_TagString: CornerExit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6629,7 +6629,7 @@ Transform:
   m_GameObject: {fileID: 8525887070455232552}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.45, y: -0.89, z: 0}
+  m_LocalPosition: {x: -7.81, y: -1.13, z: 0}
   m_LocalScale: {x: 0.38578326, y: 0.38578326, z: 0.38578326}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6749,7 +6749,7 @@ GameObject:
   - component: {fileID: 4458880302250564850}
   m_Layer: 6
   m_Name: Waypoint_0 (36)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6883,7 +6883,7 @@ GameObject:
   - component: {fileID: 7158979261448462901}
   m_Layer: 6
   m_Name: Waypoint_0 (25)
-  m_TagString: Untagged
+  m_TagString: BreakingPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

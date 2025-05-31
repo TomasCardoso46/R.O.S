@@ -658,15 +658,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackPrefabs:
   - {fileID: 2741968400057209406, guid: 5a93146a611ba6b4080443bd49cf409d, type: 3}
-  - {fileID: 6548372085654356534, guid: fb769ccbea591554ea1e356fa1caa886, type: 3}
   - {fileID: 93200859784602904, guid: d0b1b66684c546b488e19c7d13511071, type: 3}
-  - {fileID: 1934264607065885036, guid: 9ed336ccb38da1941beb69f6fab34148, type: 3}
-  - {fileID: 5743878868478895380, guid: 01977f7b1c563df4d9e68c858a3d5423, type: 3}
-  - {fileID: 5288192908984719954, guid: 0b3255d771945a5449ce7252f28f5ad7, type: 3}
-  - {fileID: 8753667469381223055, guid: e3f9bd958ffd7544092d5cbef3cbd041, type: 3}
   - {fileID: 6860640162928196811, guid: 4231a6138212d454badfff203989481e, type: 3}
-  - {fileID: 2252538656039973946, guid: 146959b1955c56048b8dcd4fcec5d381, type: 3}
-  - {fileID: 4609504156615104084, guid: fe9c996aa2f8b7746b2728bc339cd1c6, type: 3}
   spawnPoint: {fileID: 629016139}
 --- !u!4 &1374088521
 Transform:
