@@ -15,6 +15,7 @@ public class PathFollower : MonoBehaviour
 
     [Header("Lap Time Settings")]
     public float baseLapTime = 10f;
+    public float cornerSpeed;
     public TireType tireType = TireType.Medium;
 
     [Header("Lap Counter")]
@@ -33,9 +34,15 @@ public class PathFollower : MonoBehaviour
     private float[] segmentLengths;
     private float tireDegradationPenalty = 0;
     private float adjustedLapTime;
+    private float baseCornerSpeed;
+    private float pushCornerSpeed;
+    public bool isPushing = false;
 
     void Awake()
     {
+        baseCornerSpeed = cornerSpeed;
+        pushCornerSpeed = baseCornerSpeed / 1.25f;
+
         // Auto-assign waypoints from a tagged GameObject
         GameObject waypointContainer = GameObject.FindGameObjectWithTag("Waypoints");
         if (waypointContainer != null)
@@ -102,6 +109,12 @@ public class PathFollower : MonoBehaviour
         {
             HardTires();
         }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            isPushing = !isPushing;
+            Push();
+        }
     }
 
     float GetLapTimeModifier(TireType type)
@@ -117,18 +130,25 @@ public class PathFollower : MonoBehaviour
 
     float GetDegradationModifier(TireType type)
     {
+        float modifier;
         switch (type)
         {
-            case TireType.Soft: return 0.003f;
-            case TireType.Medium: return 0.002f;
-            case TireType.Hard: return 0.001f;
-            default: return 0.3f;
+            case TireType.Soft: modifier = 0.003f; break;
+            case TireType.Medium: modifier = 0.002f; break;
+            case TireType.Hard: modifier = 0.001f; break;
+            default: modifier = 0.003f; break;
         }
+
+        if (isPushing)
+        {
+            modifier *= 1.75f; // Increase degradation while pushing
+        }
+
+        return modifier;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-
         if (other.gameObject.layer == LayerMask.NameToLayer("Checkpoint"))
         {
             tireDegradationPenalty += GetDegradationModifier(tireType);
@@ -141,22 +161,17 @@ public class PathFollower : MonoBehaviour
             Debug.Log("Race Lap Count: " + raceLap);
             tireLap++;
             Debug.Log("Tire Lap Count: " + tireLap);
-
-            //tireDegradationPenalty += GetDegradationModifier(tireType);
-            //speed = noDegSpeed - tireDegradationPenalty;
         }
 
         else if (other.CompareTag("BreakingPoint"))
         {
-            speed = speed / 2;
+            speed = speed / cornerSpeed;
         }
 
         else if (other.CompareTag("CornerExit"))
         {
             speed = noDegSpeed - tireDegradationPenalty;
         }
-
-
 
         else if (other.CompareTag("Pit") && pitRequested)
         {
@@ -195,5 +210,17 @@ public class PathFollower : MonoBehaviour
     {
         pitTire = TireType.Hard;
         pitRequested = true;
+    }
+
+    public void Push()
+    {
+        if (isPushing)
+        {
+            cornerSpeed = pushCornerSpeed;
+        }
+        else
+        {
+            cornerSpeed = baseCornerSpeed;
+        }
     }
 }

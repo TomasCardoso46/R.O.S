@@ -137,12 +137,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waypoints: []
   baseLapTime: 10
+  cornerSpeed: 2
   tireType: 0
   raceLap: 0
   tireLap: 0
   pitRequested: 0
   pitTire: 2
   pitTime: 5
+  isPushing: 0
 --- !u!58 &3677484085589738635
 CircleCollider2D:
   m_ObjectHideFlags: 0
