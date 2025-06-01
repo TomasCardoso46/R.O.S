@@ -20,4 +20,14 @@ public class NetworkUI : MonoBehaviour
             Debug.Log("Client started.");
         }
     }
+
+    public void StartHost()
+    {
+        if (!NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsClient)
+        {
+            NetworkManager.Singleton.StartHost();
+            Debug.Log("Host started.");
+        }
+    }
+
 }

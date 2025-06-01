@@ -39,8 +39,20 @@ public class PathFollower : NetworkBehaviour
     private float pushCornerSpeed;
     public bool isPushing = false;
 
+    private Renderer carRenderer;
+
+    // Networked color variable synced for all clients
+    private NetworkVariable<Color> carColor = new(
+        new Color(1f, 0f, 0f, 1f), // default red for player 1
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server);
+
+    private bool canMove = false;
+
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
+
         if (!IsServer) return;
 
         baseCornerSpeed = cornerSpeed;
@@ -77,11 +89,114 @@ public class PathFollower : NetworkBehaviour
         adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType);
         noDegSpeed = totalDistance / adjustedLapTime;
         speed = noDegSpeed;
+
+        AssignSpawnAndColor();
+
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+
+        CheckPlayersConnected();
+
+        // Subscribe to carColor changes to update the Renderer
+        carColor.OnValueChanged += OnColorChanged;
+    }
+
+    private void AssignSpawnAndColor()
+    {
+        Transform startFinish = null;
+        foreach (var wp in waypoints)
+        {
+            if (wp.CompareTag("StartFinishLine"))
+            {
+                startFinish = wp;
+                break;
+            }
+        }
+
+        if (startFinish == null)
+        {
+            Debug.LogWarning("StartFinishLine waypoint not found! Using first waypoint as fallback.");
+            startFinish = waypoints[0];
+        }
+
+        Vector3 basePos = startFinish.position;
+
+        if (OwnerClientId == 0)
+        {
+            transform.position = basePos;
+            SetNetworkCarColor(Color.red);
+        }
+        else if (OwnerClientId == 1)
+        {
+            Vector3 offset = new Vector3(-1f, 0f, 0f);
+            transform.position = basePos + offset;
+            SetNetworkCarColor(Color.blue);
+        }
+        else
+        {
+            transform.position = basePos;
+            SetNetworkCarColor(Color.red);
+        }
+    }
+
+    private void SetNetworkCarColor(Color color)
+    {
+        if (IsServer)
+        {
+            carColor.Value = color;
+        }
+    }
+
+    private void OnColorChanged(Color oldColor, Color newColor)
+    {
+        SetCarColor(newColor);
+    }
+
+    private void SetCarColor(Color color)
+    {
+        if (carRenderer == null)
+        {
+            Transform mainColorChild = transform.Find("Main Color");
+            if (mainColorChild != null)
+            {
+                carRenderer = mainColorChild.GetComponent<Renderer>();
+                if (carRenderer == null)
+                {
+                    Debug.LogWarning("'Main Color' child found but no Renderer attached.");
+                    return;
+                }
+            }
+            else
+            {
+                Debug.LogWarning("No child named 'Main Color' found!");
+                return;
+            }
+        }
+
+        carRenderer.material.color = color;
+    }
+
+    private void OnClientConnected(ulong clientId)
+    {
+        CheckPlayersConnected();
+    }
+
+    private void CheckPlayersConnected()
+    {
+        if (NetworkManager.Singleton.ConnectedClientsList.Count >= 2)
+        {
+            canMove = true;
+        }
+        else
+        {
+            canMove = false;
+        }
     }
 
     void Update()
     {
         if (!IsServer) return;
+
+        if (!canMove) return;
 
         adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType);
         noDegSpeed = totalDistance / adjustedLapTime;
@@ -98,10 +213,13 @@ public class PathFollower : NetworkBehaviour
             currentIndex = (currentIndex + 1) % waypoints.Length;
         }
 
-        if (Input.GetKeyDown(KeyCode.S)) { SoftTiresServerRpc(); }
-        if (Input.GetKeyDown(KeyCode.M)) { MediumTiresServerRpc(); }
-        if (Input.GetKeyDown(KeyCode.H)) { HardTiresServerRpc(); }
-        if (Input.GetKeyDown(KeyCode.P)) { TogglePushServerRpc(); }
+        if (IsOwner)
+        {
+            if (Input.GetKeyDown(KeyCode.S)) { SoftTiresServerRpc(); }
+            if (Input.GetKeyDown(KeyCode.M)) { MediumTiresServerRpc(); }
+            if (Input.GetKeyDown(KeyCode.H)) { HardTiresServerRpc(); }
+            if (Input.GetKeyDown(KeyCode.P)) { TogglePushServerRpc(); }
+        }
     }
 
     float GetLapTimeModifier(TireType type)

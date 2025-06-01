@@ -3,46 +3,53 @@ using UnityEngine;
 
 public class CarManager : NetworkBehaviour
 {
-    [Header("List of Car Prefabs")]
-    public GameObject[] carPrefabs;
-
-    private Vector3 spawnPosition;
+    public GameObject carPrefab; // assign prefab with PathFollower + NetworkObject
 
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            GameObject startFinishLine = GameObject.FindGameObjectWithTag("StartFinishLine");
+            foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+            {
+                SpawnCarForClient(clientId);
+            }
 
-            if (startFinishLine != null)
-                spawnPosition = startFinishLine.transform.position;
-            else
-                spawnPosition = Vector3.zero;
-
-            SpawnCarForClient(OwnerClientId);
+            NetworkManager.Singleton.OnClientConnectedCallback += SpawnCarForClient;
         }
     }
 
-    void SpawnCarForClient(ulong clientId)
+    private void SpawnCarForClient(ulong clientId)
     {
-        int prefabIndex = 0; // You can add logic here to select different cars
-        if (carPrefabs == null || carPrefabs.Length == 0)
-        {
-            Debug.LogError("CarManager: No car prefabs assigned.");
-            return;
-        }
+        GameObject carInstance = Instantiate(carPrefab);
 
-        GameObject carPrefab = carPrefabs[prefabIndex];
-        GameObject carInstance = Instantiate(carPrefab, spawnPosition, Quaternion.identity);
+        // Find start/finish line position
+        GameObject startFinish = GameObject.FindGameObjectWithTag("StartFinishLine");
+        if (startFinish != null)
+        {
+            carInstance.transform.position = startFinish.transform.position;
+            carInstance.transform.rotation = startFinish.transform.rotation;
+        }
+        else
+        {
+            Debug.LogWarning("StartFinishLine not found in scene. Using default spawn position.");
+        }
 
         NetworkObject netObj = carInstance.GetComponent<NetworkObject>();
-        if (netObj == null)
+        if (netObj != null)
         {
-            Debug.LogError("Car prefab must have a NetworkObject component.");
-            Destroy(carInstance);
-            return;
+            netObj.SpawnAsPlayerObject(clientId);
         }
+        else
+        {
+            Debug.LogError("Car prefab missing NetworkObject component.");
+        }
+    }
 
-        netObj.SpawnAsPlayerObject(clientId);
+    private void OnDestroy()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= SpawnCarForClient;
+        }
     }
 }
