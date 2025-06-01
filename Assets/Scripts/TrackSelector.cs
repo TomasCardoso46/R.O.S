@@ -1,6 +1,7 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class TrackSelector : MonoBehaviour
+public class TrackSelector : NetworkBehaviour
 {
     [Header("List of prefab tracks to choose from")]
     public GameObject[] trackPrefabs;
@@ -8,19 +9,41 @@ public class TrackSelector : MonoBehaviour
     [Header("Location to spawn the selected track")]
     public Transform spawnPoint;
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
-        if (trackPrefabs.Length == 0 || spawnPoint == null)
+        if (IsServer)
         {
-            Debug.LogWarning("TrackSelector: Missing track prefabs or spawn point.");
+            SelectAndSpawnTrack();
+        }
+    }
+
+    void SelectAndSpawnTrack()
+    {
+        if (trackPrefabs == null || trackPrefabs.Length == 0)
+        {
+            Debug.LogWarning("TrackSelector: No track prefabs assigned.");
             return;
         }
 
-        // Randomly select a track prefab
+        if (spawnPoint == null)
+        {
+            Debug.LogWarning("TrackSelector: Spawn point not assigned.");
+            return;
+        }
+
         int randomIndex = Random.Range(0, trackPrefabs.Length);
         GameObject selectedTrack = trackPrefabs[randomIndex];
 
-        // Instantiate the selected track at the spawn point
-        Instantiate(selectedTrack, spawnPoint.position, Quaternion.identity);
+        GameObject track = Instantiate(selectedTrack, spawnPoint.position, Quaternion.identity);
+
+        NetworkObject netObj = track.GetComponent<NetworkObject>();
+        if (netObj == null)
+        {
+            Debug.LogError("Track prefab must have a NetworkObject component.");
+            Destroy(track);
+            return;
+        }
+
+        netObj.Spawn();
     }
 }

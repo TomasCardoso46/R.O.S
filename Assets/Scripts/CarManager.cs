@@ -1,41 +1,48 @@
+using Unity.Netcode;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
-public class CarManager : MonoBehaviour
+public class CarManager : NetworkBehaviour
 {
     [Header("List of Car Prefabs")]
-    public List<GameObject> carPrefabs;
+    public GameObject[] carPrefabs;
 
-    private Vector2 spawnPosition;
-    public float seconds;
+    private Vector3 spawnPosition;
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
-        StartCoroutine(SpawnCarsAfterDelay(seconds));
+        if (IsServer)
+        {
+            GameObject startFinishLine = GameObject.FindGameObjectWithTag("StartFinishLine");
+
+            if (startFinishLine != null)
+                spawnPosition = startFinishLine.transform.position;
+            else
+                spawnPosition = Vector3.zero;
+
+            SpawnCarForClient(OwnerClientId);
+        }
     }
 
-    IEnumerator SpawnCarsAfterDelay(float delay)
+    void SpawnCarForClient(ulong clientId)
     {
-        yield return new WaitForSeconds(delay);
-        GameObject startFinishLine = GameObject.FindGameObjectWithTag("StartFinishLine");
-
-        if (startFinishLine != null)
+        int prefabIndex = 0; // You can add logic here to select different cars
+        if (carPrefabs == null || carPrefabs.Length == 0)
         {
-            spawnPosition = startFinishLine.transform.position;
-        }
-        else
-        {
-            Debug.LogWarning("No object with tag 'StartFinishLine' found. Using (0, 0) as fallback position.");
-            spawnPosition = Vector2.zero;
+            Debug.LogError("CarManager: No car prefabs assigned.");
+            return;
         }
 
-        foreach (GameObject carPrefab in carPrefabs)
+        GameObject carPrefab = carPrefabs[prefabIndex];
+        GameObject carInstance = Instantiate(carPrefab, spawnPosition, Quaternion.identity);
+
+        NetworkObject netObj = carInstance.GetComponent<NetworkObject>();
+        if (netObj == null)
         {
-            if (carPrefab != null)
-            {
-                Instantiate(carPrefab, spawnPosition, Quaternion.identity);
-            }
+            Debug.LogError("Car prefab must have a NetworkObject component.");
+            Destroy(carInstance);
+            return;
         }
+
+        netObj.SpawnAsPlayerObject(clientId);
     }
 }

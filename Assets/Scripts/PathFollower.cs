@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PathFollower : MonoBehaviour
+public class PathFollower : NetworkBehaviour
 {
     public enum TireType
     {
@@ -19,8 +20,8 @@ public class PathFollower : MonoBehaviour
     public TireType tireType = TireType.Medium;
 
     [Header("Lap Counter")]
-    public int raceLap = 0;
-    public int tireLap = 0;
+    public NetworkVariable<int> raceLap = new();
+    public NetworkVariable<int> tireLap = new();
 
     [Header("Pit Info")]
     public bool pitRequested = false;
@@ -38,12 +39,13 @@ public class PathFollower : MonoBehaviour
     private float pushCornerSpeed;
     public bool isPushing = false;
 
-    void Awake()
+    public override void OnNetworkSpawn()
     {
+        if (!IsServer) return;
+
         baseCornerSpeed = cornerSpeed;
         pushCornerSpeed = baseCornerSpeed / 1.25f;
 
-        // Auto-assign waypoints from a tagged GameObject
         GameObject waypointContainer = GameObject.FindGameObjectWithTag("Waypoints");
         if (waypointContainer != null)
         {
@@ -61,7 +63,6 @@ public class PathFollower : MonoBehaviour
             return;
         }
 
-        // Calculate total path length and segment lengths
         totalDistance = 0f;
         segmentLengths = new float[waypoints.Length];
 
@@ -80,6 +81,8 @@ public class PathFollower : MonoBehaviour
 
     void Update()
     {
+        if (!IsServer) return;
+
         adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType);
         noDegSpeed = totalDistance / adjustedLapTime;
 
@@ -95,60 +98,41 @@ public class PathFollower : MonoBehaviour
             currentIndex = (currentIndex + 1) % waypoints.Length;
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            SoftTires();
-        }
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            MediumTires();
-        }
-
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            HardTires();
-        }
-
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            isPushing = !isPushing;
-            Push();
-        }
+        if (Input.GetKeyDown(KeyCode.S)) { SoftTiresServerRpc(); }
+        if (Input.GetKeyDown(KeyCode.M)) { MediumTiresServerRpc(); }
+        if (Input.GetKeyDown(KeyCode.H)) { HardTiresServerRpc(); }
+        if (Input.GetKeyDown(KeyCode.P)) { TogglePushServerRpc(); }
     }
 
     float GetLapTimeModifier(TireType type)
     {
-        switch (type)
+        return type switch
         {
-            case TireType.Soft: return -0.45f;
-            case TireType.Medium: return 0f;
-            case TireType.Hard: return 0.45f;
-            default: return 0f;
-        }
+            TireType.Soft => -0.45f,
+            TireType.Medium => 0f,
+            TireType.Hard => 0.45f,
+            _ => 0f
+        };
     }
 
     float GetDegradationModifier(TireType type)
     {
-        float modifier;
-        switch (type)
+        float modifier = type switch
         {
-            case TireType.Soft: modifier = 0.003f; break;
-            case TireType.Medium: modifier = 0.002f; break;
-            case TireType.Hard: modifier = 0.001f; break;
-            default: modifier = 0.003f; break;
-        }
+            TireType.Soft => 0.003f,
+            TireType.Medium => 0.002f,
+            TireType.Hard => 0.001f,
+            _ => 0.003f
+        };
 
-        if (isPushing)
-        {
-            modifier *= 1.75f; // Increase degradation while pushing
-        }
-
+        if (isPushing) modifier *= 1.75f;
         return modifier;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!IsServer) return;
+
         if (other.gameObject.layer == LayerMask.NameToLayer("Checkpoint"))
         {
             tireDegradationPenalty += GetDegradationModifier(tireType);
@@ -157,22 +141,17 @@ public class PathFollower : MonoBehaviour
 
         if (other.CompareTag("StartFinishLine"))
         {
-            raceLap++;
-            Debug.Log("Race Lap Count: " + raceLap);
-            tireLap++;
-            Debug.Log("Tire Lap Count: " + tireLap);
+            raceLap.Value++;
+            tireLap.Value++;
         }
-
         else if (other.CompareTag("BreakingPoint"))
         {
             speed = speed / cornerSpeed;
         }
-
         else if (other.CompareTag("CornerExit"))
         {
             speed = noDegSpeed - tireDegradationPenalty;
         }
-
         else if (other.CompareTag("Pit") && pitRequested)
         {
             PitStop(pitTire);
@@ -194,26 +173,19 @@ public class PathFollower : MonoBehaviour
         tireDegradationPenalty = 0;
     }
 
-    public void SoftTires()
-    {
-        pitTire = TireType.Soft;
-        pitRequested = true;
-    }
+    [ServerRpc]
+    public void SoftTiresServerRpc() { pitTire = TireType.Soft; pitRequested = true; }
 
-    public void MediumTires()
-    {
-        pitTire = TireType.Medium;
-        pitRequested = true;
-    }
+    [ServerRpc]
+    public void MediumTiresServerRpc() { pitTire = TireType.Medium; pitRequested = true; }
 
-    public void HardTires()
-    {
-        pitTire = TireType.Hard;
-        pitRequested = true;
-    }
+    [ServerRpc]
+    public void HardTiresServerRpc() { pitTire = TireType.Hard; pitRequested = true; }
 
-    public void Push()
+    [ServerRpc]
+    public void TogglePushServerRpc()
     {
+        isPushing = !isPushing;
         if (isPushing)
         {
             cornerSpeed = pushCornerSpeed;
