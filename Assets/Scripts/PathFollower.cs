@@ -5,12 +5,7 @@ using TMPro;
 
 public class PathFollower : NetworkBehaviour
 {
-    public enum TireType
-    {
-        Soft,
-        Medium,
-        Hard
-    }
+    public enum TireType { Soft, Medium, Hard }
 
     [Header("Path Settings")]
     public Transform[] waypoints;
@@ -40,19 +35,23 @@ public class PathFollower : NetworkBehaviour
     private float pushCornerSpeed;
     private NetworkVariable<bool> isPushing = new(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    private Renderer carRenderer;
-
-    private NetworkVariable<Color> carColor = new(
-        new Color(1f, 0f, 0f, 1f),
-        NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Server);
-
     private bool canMove = false;
+    private bool hasWon = false;
 
+    // UI Texts (local)
     private TextMeshProUGUI pitStatusText;
     private TextMeshProUGUI pushStatusText;
     private TextMeshProUGUI tireCompoundText;
     private TextMeshProUGUI tireAgeText;
+    private TextMeshProUGUI currentPlayerText;
+
+    // UI Texts (shared)
+    private TextMeshProUGUI player1LapText;
+    private TextMeshProUGUI player2LapText;
+
+    // Victory UI roots
+    private GameObject player1Victory;
+    private GameObject player2Victory;
 
     public override void OnNetworkSpawn()
     {
@@ -64,6 +63,22 @@ public class PathFollower : NetworkBehaviour
             pushStatusText = FindTextByTag("PushText");
             tireCompoundText = FindTextByTag("TireText");
             tireAgeText = FindTextByTag("TireAgeText");
+            currentPlayerText = FindTextByTag("CurrentPlayer");
+
+            player1LapText = FindTextByTag("Player1Lap");
+            player2LapText = FindTextByTag("Player2Lap");
+
+            player1Victory = GameObject.FindGameObjectWithTag("Player1Victory");
+            player2Victory = GameObject.FindGameObjectWithTag("Player2Victory");
+
+            if (currentPlayerText != null)
+                currentPlayerText.text = IsHost ? "Blue" : "Red";
+
+            if (player1Victory != null && player1Victory.transform.childCount > 0)
+                player1Victory.transform.GetChild(0).gameObject.SetActive(false);
+
+            if (player2Victory != null && player2Victory.transform.childCount > 0)
+                player2Victory.transform.GetChild(0).gameObject.SetActive(false);
         }
 
         if (!IsServer) return;
@@ -77,9 +92,7 @@ public class PathFollower : NetworkBehaviour
             int count = waypointContainer.transform.childCount;
             waypoints = new Transform[count];
             for (int i = 0; i < count; i++)
-            {
                 waypoints[i] = waypointContainer.transform.GetChild(i);
-            }
         }
 
         if (waypoints == null || waypoints.Length < 2)
@@ -102,10 +115,9 @@ public class PathFollower : NetworkBehaviour
         noDegSpeed = totalDistance / adjustedLapTime;
         speed = noDegSpeed;
 
-        AssignSpawnAndColor();
+        AssignSpawnPosition();
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         CheckPlayersConnected();
-        carColor.OnValueChanged += OnColorChanged;
     }
 
     private TextMeshProUGUI FindTextByTag(string tag)
@@ -125,7 +137,7 @@ public class PathFollower : NetworkBehaviour
         }
     }
 
-    private void AssignSpawnAndColor()
+    private void AssignSpawnPosition()
     {
         Transform startFinish = null;
         foreach (var wp in waypoints)
@@ -146,58 +158,11 @@ public class PathFollower : NetworkBehaviour
         Vector3 basePos = startFinish.position;
 
         if (OwnerClientId == 0)
-        {
             transform.position = basePos;
-            SetNetworkCarColor(Color.red);
-        }
         else if (OwnerClientId == 1)
-        {
-            Vector3 offset = new Vector3(-1f, 0f, 0f);
-            transform.position = basePos + offset;
-            SetNetworkCarColor(Color.blue);
-        }
+            transform.position = basePos + new Vector3(1f, 0f, 0f);
         else
-        {
             transform.position = basePos;
-            SetNetworkCarColor(Color.red);
-        }
-    }
-
-    private void SetNetworkCarColor(Color color)
-    {
-        if (IsServer)
-        {
-            carColor.Value = color;
-        }
-    }
-
-    private void OnColorChanged(Color oldColor, Color newColor)
-    {
-        SetCarColor(newColor);
-    }
-
-    private void SetCarColor(Color color)
-    {
-        if (carRenderer == null)
-        {
-            Transform mainColorChild = transform.Find("Main Color");
-            if (mainColorChild != null)
-            {
-                carRenderer = mainColorChild.GetComponent<Renderer>();
-                if (carRenderer == null)
-                {
-                    Debug.LogWarning("'Main Color' child found but no Renderer attached.");
-                    return;
-                }
-            }
-            else
-            {
-                Debug.LogWarning("No child named 'Main Color' found!");
-                return;
-            }
-        }
-
-        carRenderer.material.color = color;
     }
 
     private void OnClientConnected(ulong clientId)
@@ -207,24 +172,17 @@ public class PathFollower : NetworkBehaviour
 
     private void CheckPlayersConnected()
     {
-        if (NetworkManager.Singleton.ConnectedClientsList.Count >= 2)
-        {
-            canMove = true;
-        }
-        else
-        {
-            canMove = false;
-        }
+        canMove = NetworkManager.Singleton.ConnectedClientsList.Count >= 2;
     }
 
     void Update()
     {
         if (IsOwner)
         {
-            if (Input.GetKeyDown(KeyCode.S)) { SoftTiresServerRpc(); }
-            if (Input.GetKeyDown(KeyCode.M)) { MediumTiresServerRpc(); }
-            if (Input.GetKeyDown(KeyCode.H)) { HardTiresServerRpc(); }
-            if (Input.GetKeyDown(KeyCode.P)) { TogglePushServerRpc(); }
+            if (Input.GetKeyDown(KeyCode.S)) SoftTiresServerRpc();
+            if (Input.GetKeyDown(KeyCode.M)) MediumTiresServerRpc();
+            if (Input.GetKeyDown(KeyCode.H)) HardTiresServerRpc();
+            if (Input.GetKeyDown(KeyCode.P)) TogglePushServerRpc();
 
             if (pitStatusText != null)
                 pitStatusText.text = pitRequested.Value ? "In" : "Out";
@@ -245,12 +203,16 @@ public class PathFollower : NetworkBehaviour
 
             if (tireAgeText != null)
                 tireAgeText.text = tireLap.Value.ToString();
+
+            if (player1LapText != null)
+                player1LapText.text = $"{raceLap.Value}";
+
+            if (player2LapText != null)
+                player2LapText.text = $"{raceLap.Value}";
         }
 
-        if (!IsServer) return;
-
-        if (!canMove) return;
-        if (waypoints == null || waypoints.Length < 2) return;
+        if (!IsServer || !canMove || waypoints == null || waypoints.Length < 2 || hasWon)
+            return;
 
         adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType.Value);
         noDegSpeed = totalDistance / adjustedLapTime;
@@ -261,9 +223,7 @@ public class PathFollower : NetworkBehaviour
         transform.position = Vector2.MoveTowards(transform.position, nextWaypoint.position, step);
 
         if (Vector2.Distance(transform.position, nextWaypoint.position) < 0.01f)
-        {
             currentIndex = (currentIndex + 1) % waypoints.Length;
-        }
     }
 
     float GetLapTimeModifier(TireType type)
@@ -293,7 +253,7 @@ public class PathFollower : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!IsServer) return;
+        if (!IsServer || hasWon) return;
 
         if (other.gameObject.layer == LayerMask.NameToLayer("Checkpoint"))
         {
@@ -305,6 +265,13 @@ public class PathFollower : NetworkBehaviour
         {
             raceLap.Value++;
             tireLap.Value++;
+
+            if (raceLap.Value >= 50 && !hasWon)
+            {
+                hasWon = true;
+                speed = 0;
+                ShowVictoryClientRpc(IsHost);
+            }
         }
         else if (other.CompareTag("BreakingPoint"))
         {
@@ -336,12 +303,9 @@ public class PathFollower : NetworkBehaviour
         tireLap.Value = 0;
     }
 
-    [ServerRpc]
-    public void SoftTiresServerRpc() => RequestPit(TireType.Soft);
-    [ServerRpc]
-    public void MediumTiresServerRpc() => RequestPit(TireType.Medium);
-    [ServerRpc]
-    public void HardTiresServerRpc() => RequestPit(TireType.Hard);
+    [ServerRpc] public void SoftTiresServerRpc() => RequestPit(TireType.Soft);
+    [ServerRpc] public void MediumTiresServerRpc() => RequestPit(TireType.Medium);
+    [ServerRpc] public void HardTiresServerRpc() => RequestPit(TireType.Hard);
 
     private void RequestPit(TireType type)
     {
@@ -354,5 +318,23 @@ public class PathFollower : NetworkBehaviour
     {
         isPushing.Value = !isPushing.Value;
         cornerSpeed = isPushing.Value ? pushCornerSpeed : baseCornerSpeed;
+    }
+
+    [ClientRpc]
+    private void ShowVictoryClientRpc(bool isPlayer1)
+    {
+        if (isPlayer1)
+        {
+            if (player1Victory != null && player1Victory.transform.childCount > 0)
+                player1Victory.transform.GetChild(0).gameObject.SetActive(true);
+        }
+        else
+        {
+            if (player2Victory != null && player2Victory.transform.childCount > 0)
+                player2Victory.transform.GetChild(0).gameObject.SetActive(true);
+        }
+
+        canMove = false;
+        speed = 0;
     }
 }

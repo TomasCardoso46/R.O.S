@@ -13,6 +13,11 @@ TagManager:
   - TireText
   - PushText
   - TireAgeText
+  - Player1Lap
+  - Player2Lap
+  - CurrentPlayer
+  - Player1Victory
+  - Player2Victory
   layers:
   - Default
   - TransparentFX
