@@ -9,6 +9,10 @@ TagManager:
   - Waypoints
   - BreakingPoint
   - CornerExit
+  - PitText
+  - TireText
+  - PushText
+  - TireAgeText
   layers:
   - Default
   - TransparentFX

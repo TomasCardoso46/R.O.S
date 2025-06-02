@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class CarManager : NetworkBehaviour
 {
-    public GameObject carPrefab; // assign prefab with PathFollower + NetworkObject
+    public GameObject hostCarPrefab;   // Prefab for the host
+    public GameObject clientCarPrefab; // Prefab for clients
 
     public override void OnNetworkSpawn()
     {
@@ -20,9 +21,20 @@ public class CarManager : NetworkBehaviour
 
     private void SpawnCarForClient(ulong clientId)
     {
-        GameObject carInstance = Instantiate(carPrefab);
+        GameObject prefabToSpawn;
 
-        // Find start/finish line position
+        if (clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            prefabToSpawn = hostCarPrefab;
+        }
+        else
+        {
+            prefabToSpawn = clientCarPrefab;
+        }
+
+        GameObject carInstance = Instantiate(prefabToSpawn);
+
+        // Set position to Start/Finish line if found
         GameObject startFinish = GameObject.FindGameObjectWithTag("StartFinishLine");
         if (startFinish != null)
         {
@@ -31,7 +43,7 @@ public class CarManager : NetworkBehaviour
         }
         else
         {
-            Debug.LogWarning("StartFinishLine not found in scene. Using default spawn position.");
+            Debug.LogWarning("StartFinishLine not found. Using default spawn position.");
         }
 
         NetworkObject netObj = carInstance.GetComponent<NetworkObject>();
@@ -41,7 +53,7 @@ public class CarManager : NetworkBehaviour
         }
         else
         {
-            Debug.LogError("Car prefab missing NetworkObject component.");
+            Debug.LogError("Car prefab is missing a NetworkObject component.");
         }
     }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Unity.Netcode;
+using TMPro;
 
 public class PathFollower : NetworkBehaviour
 {
@@ -17,14 +18,14 @@ public class PathFollower : NetworkBehaviour
     [Header("Lap Time Settings")]
     public float baseLapTime = 10f;
     public float cornerSpeed;
-    public TireType tireType = TireType.Medium;
+    public NetworkVariable<TireType> tireType = new(TireType.Medium, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     [Header("Lap Counter")]
     public NetworkVariable<int> raceLap = new();
     public NetworkVariable<int> tireLap = new();
 
     [Header("Pit Info")]
-    public bool pitRequested = false;
+    public NetworkVariable<bool> pitRequested = new();
     public TireType pitTire;
     public float pitTime;
 
@@ -37,21 +38,33 @@ public class PathFollower : NetworkBehaviour
     private float adjustedLapTime;
     private float baseCornerSpeed;
     private float pushCornerSpeed;
-    public bool isPushing = false;
+    private NetworkVariable<bool> isPushing = new(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private Renderer carRenderer;
 
-    // Networked color variable synced for all clients
     private NetworkVariable<Color> carColor = new(
-        new Color(1f, 0f, 0f, 1f), // default red for player 1
+        new Color(1f, 0f, 0f, 1f),
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server);
 
     private bool canMove = false;
 
+    private TextMeshProUGUI pitStatusText;
+    private TextMeshProUGUI pushStatusText;
+    private TextMeshProUGUI tireCompoundText;
+    private TextMeshProUGUI tireAgeText;
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        if (IsOwner)
+        {
+            pitStatusText = FindTextByTag("PitText");
+            pushStatusText = FindTextByTag("PushText");
+            tireCompoundText = FindTextByTag("TireText");
+            tireAgeText = FindTextByTag("TireAgeText");
+        }
 
         if (!IsServer) return;
 
@@ -77,7 +90,6 @@ public class PathFollower : NetworkBehaviour
 
         totalDistance = 0f;
         segmentLengths = new float[waypoints.Length];
-
         for (int i = 0; i < waypoints.Length; i++)
         {
             int nextIndex = (i + 1) % waypoints.Length;
@@ -86,18 +98,31 @@ public class PathFollower : NetworkBehaviour
             totalDistance += segmentLength;
         }
 
-        adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType);
+        adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType.Value);
         noDegSpeed = totalDistance / adjustedLapTime;
         speed = noDegSpeed;
 
         AssignSpawnAndColor();
-
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-
         CheckPlayersConnected();
-
-        // Subscribe to carColor changes to update the Renderer
         carColor.OnValueChanged += OnColorChanged;
+    }
+
+    private TextMeshProUGUI FindTextByTag(string tag)
+    {
+        GameObject obj = GameObject.FindGameObjectWithTag(tag);
+        if (obj != null)
+        {
+            var text = obj.GetComponent<TextMeshProUGUI>();
+            if (text == null)
+                Debug.LogWarning($"{tag} object found but no TextMeshProUGUI attached.");
+            return text;
+        }
+        else
+        {
+            Debug.LogWarning($"No GameObject found with tag '{tag}'.");
+            return null;
+        }
     }
 
     private void AssignSpawnAndColor()
@@ -194,14 +219,41 @@ public class PathFollower : NetworkBehaviour
 
     void Update()
     {
+        if (IsOwner)
+        {
+            if (Input.GetKeyDown(KeyCode.S)) { SoftTiresServerRpc(); }
+            if (Input.GetKeyDown(KeyCode.M)) { MediumTiresServerRpc(); }
+            if (Input.GetKeyDown(KeyCode.H)) { HardTiresServerRpc(); }
+            if (Input.GetKeyDown(KeyCode.P)) { TogglePushServerRpc(); }
+
+            if (pitStatusText != null)
+                pitStatusText.text = pitRequested.Value ? "In" : "Out";
+
+            if (pushStatusText != null)
+                pushStatusText.text = isPushing.Value ? "Pushing" : "Race Pace";
+
+            if (tireCompoundText != null)
+            {
+                tireCompoundText.text = tireType.Value switch
+                {
+                    TireType.Soft => "Softs",
+                    TireType.Medium => "Mediums",
+                    TireType.Hard => "Hards",
+                    _ => ""
+                };
+            }
+
+            if (tireAgeText != null)
+                tireAgeText.text = tireLap.Value.ToString();
+        }
+
         if (!IsServer) return;
 
         if (!canMove) return;
-
-        adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType);
-        noDegSpeed = totalDistance / adjustedLapTime;
-
         if (waypoints == null || waypoints.Length < 2) return;
+
+        adjustedLapTime = baseLapTime + GetLapTimeModifier(tireType.Value);
+        noDegSpeed = totalDistance / adjustedLapTime;
 
         Transform nextWaypoint = waypoints[(currentIndex + 1) % waypoints.Length];
         float step = speed * Time.deltaTime;
@@ -211,14 +263,6 @@ public class PathFollower : NetworkBehaviour
         if (Vector2.Distance(transform.position, nextWaypoint.position) < 0.01f)
         {
             currentIndex = (currentIndex + 1) % waypoints.Length;
-        }
-
-        if (IsOwner)
-        {
-            if (Input.GetKeyDown(KeyCode.S)) { SoftTiresServerRpc(); }
-            if (Input.GetKeyDown(KeyCode.M)) { MediumTiresServerRpc(); }
-            if (Input.GetKeyDown(KeyCode.H)) { HardTiresServerRpc(); }
-            if (Input.GetKeyDown(KeyCode.P)) { TogglePushServerRpc(); }
         }
     }
 
@@ -243,7 +287,7 @@ public class PathFollower : NetworkBehaviour
             _ => 0.003f
         };
 
-        if (isPushing) modifier *= 1.75f;
+        if (isPushing.Value) modifier *= 1.75f;
         return modifier;
     }
 
@@ -253,7 +297,7 @@ public class PathFollower : NetworkBehaviour
 
         if (other.gameObject.layer == LayerMask.NameToLayer("Checkpoint"))
         {
-            tireDegradationPenalty += GetDegradationModifier(tireType);
+            tireDegradationPenalty += GetDegradationModifier(tireType.Value);
             speed = noDegSpeed - tireDegradationPenalty;
         }
 
@@ -270,10 +314,10 @@ public class PathFollower : NetworkBehaviour
         {
             speed = noDegSpeed - tireDegradationPenalty;
         }
-        else if (other.CompareTag("Pit") && pitRequested)
+        else if (other.CompareTag("Pit") && pitRequested.Value)
         {
             PitStop(pitTire);
-            pitRequested = false;
+            pitRequested.Value = false;
         }
     }
 
@@ -287,30 +331,28 @@ public class PathFollower : NetworkBehaviour
     private void PitStop(TireType tireSet)
     {
         StartCoroutine(Stop(pitTime));
-        tireType = tireSet;
+        tireType.Value = tireSet;
         tireDegradationPenalty = 0;
+        tireLap.Value = 0;
     }
 
     [ServerRpc]
-    public void SoftTiresServerRpc() { pitTire = TireType.Soft; pitRequested = true; }
-
+    public void SoftTiresServerRpc() => RequestPit(TireType.Soft);
     [ServerRpc]
-    public void MediumTiresServerRpc() { pitTire = TireType.Medium; pitRequested = true; }
-
+    public void MediumTiresServerRpc() => RequestPit(TireType.Medium);
     [ServerRpc]
-    public void HardTiresServerRpc() { pitTire = TireType.Hard; pitRequested = true; }
+    public void HardTiresServerRpc() => RequestPit(TireType.Hard);
+
+    private void RequestPit(TireType type)
+    {
+        pitTire = type;
+        pitRequested.Value = true;
+    }
 
     [ServerRpc]
     public void TogglePushServerRpc()
     {
-        isPushing = !isPushing;
-        if (isPushing)
-        {
-            cornerSpeed = pushCornerSpeed;
-        }
-        else
-        {
-            cornerSpeed = baseCornerSpeed;
-        }
+        isPushing.Value = !isPushing.Value;
+        cornerSpeed = isPushing.Value ? pushCornerSpeed : baseCornerSpeed;
     }
 }
