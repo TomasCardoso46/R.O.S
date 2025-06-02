@@ -7,73 +7,127 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using Unity.Networking.Transport.Relay;
+using System;
+using System.Threading.Tasks;
 
-public class RelayManager : MonoBehaviour
+public class MultiplayerRelayManager : MonoBehaviour
 {
-    [SerializeField] Button hostButton;
-    [SerializeField] Button joinButton;
-    [SerializeField] TMP_InputField joinInput;
-    [SerializeField] TextMeshProUGUI codeText;
+    [SerializeField] private Button hostButton;
+    [SerializeField] private Button joinButton;
+    [SerializeField] private TMP_InputField joinInput;
+    [SerializeField] private TextMeshProUGUI codeText;
 
-    async void Start()
+    private const int MaxConnections = 4;
+
+    private async void Start()
     {
-        await UnityServices.InitializeAsync();
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        hostButton.onClick.AddListener(HostGame);
+        joinButton.onClick.AddListener(JoinGame);
 
-        hostButton.onClick.AddListener(CreateRelay);
-        joinButton.onClick.AddListener(() => JoinRelay(joinInput.text));
+        await InitializeUnityServices();
     }
 
-    async void CreateRelay()
+    private async Task InitializeUnityServices()
     {
         try
         {
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
-            string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            codeText.text = joinCode;
+            if (UnityServices.State != ServicesInitializationState.Initialized)
+            {
+                await UnityServices.InitializeAsync();
+            }
 
-            var relayServerData = new RelayServerData(
+            if (!AuthenticationService.Instance.IsSignedIn)
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                Debug.Log("Signed in anonymously.");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to initialize Unity Services or authenticate: {e.Message}");
+        }
+    }
+
+    private async void HostGame()
+    {
+        try
+        {
+            Debug.Log("Creating Relay allocation...");
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(MaxConnections);
+            Debug.Log("Allocation created.");
+
+            string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            Debug.Log($"Join code generated: {joinCode}");
+
+            // Setup transport with Relay data
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.SetRelayServerData(
                 allocation.RelayServer.IpV4,
                 (ushort)allocation.RelayServer.Port,
                 allocation.AllocationIdBytes,
                 allocation.Key,
                 allocation.ConnectionData,
-                allocation.ConnectionData, // host uses its own connection data
-                true // use secure connection (DTLS)
+                allocation.ConnectionData, // hostConnectionData same as connectionData for host
+                true // use DTLS
             );
 
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-            NetworkManager.Singleton.StartHost();
+            codeText.text = $"Join Code: {joinCode}";
+
+            bool started = NetworkManager.Singleton.StartHost();
+            Debug.Log($"Host started: {started}");
+            if (!started)
+                Debug.LogError("Failed to start host!");
         }
-        catch (RelayServiceException e)
+        catch (RelayServiceException ex)
         {
-            Debug.LogError("Relay Host Error: " + e.Message);
+            Debug.LogError($"Relay error while hosting: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Unexpected error while hosting: {ex.Message}");
         }
     }
 
-    async void JoinRelay(string joinCode)
+    private async void JoinGame()
     {
+        string joinCode = joinInput.text.Trim();
+
+        if (string.IsNullOrEmpty(joinCode))
+        {
+            Debug.LogWarning("Join code is empty.");
+            return;
+        }
+
         try
         {
+            Debug.Log($"Trying to join with code: {joinCode}");
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+            Debug.Log("JoinAllocation received successfully.");
 
-            var relayServerData = new RelayServerData(
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.SetRelayServerData(
                 joinAllocation.RelayServer.IpV4,
                 (ushort)joinAllocation.RelayServer.Port,
                 joinAllocation.AllocationIdBytes,
                 joinAllocation.Key,
                 joinAllocation.ConnectionData,
                 joinAllocation.HostConnectionData,
-                true // use secure connection (DTLS)
+                true // use DTLS
             );
+            Debug.Log("SetRelayServerData called successfully.");
 
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-            NetworkManager.Singleton.StartClient();
+            bool started = NetworkManager.Singleton.StartClient();
+            Debug.Log($"StartClient called, success? {started}");
+            if (!started)
+                Debug.LogError("Failed to start client!");
         }
-        catch (RelayServiceException e)
+        catch (RelayServiceException ex)
         {
-            Debug.LogError("Relay Join Error: " + e.Message);
+            Debug.LogError($"Relay error while joining: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Unexpected error while joining: {ex.Message}");
         }
     }
 }

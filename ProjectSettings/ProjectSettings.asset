@@ -921,10 +921,10 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: b2c12fec-51e3-4a24-a2ff-f73636c8d5ae
+  cloudProjectId: 1911996e-455f-4625-a6c3-0a4a4bb1d1dd
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Relay R.O.S
+  projectName: R.O.S
   organizationId: tomascardoso4633
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
