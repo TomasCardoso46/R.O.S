@@ -72,7 +72,32 @@ O jogo usa Relay do unity, disponivel em "cloud.unity.com".
 
 Os vários componentes usam o Netcode for GameObjects do unity
 
-As variáveis que diretamente impactam a visão do jogo ou velocidades, raceLap, tireLap, pitRequested, tireType, isPushing são sincronizadas apenas com o uso de NetworkVariable< T >
+As variáveis que diretamente impactam a visão do jogo ou velocidades, raceLap, tireLap, pitRequested, tireType, isPushing são sincronizadas apenas com o uso de NetworkVariable< T >.
+
+Inputs passam por um ServerRpc enquanto estado de vitória passa pelo ClientRpc.
+
+Metodo SpawnCarForClient instancia o carro do novo jogador tanto para o novo jogador como para o Host, assim seria possivel hipoteticamente extender o jogo para ter mais jogadores
+
+No script de relay, é feito um login anonimo e conexão aos serviços Unity, CreateRelay solicita uma alocação de servidor Relay, o transporte segue o protocolo DTLS, Apenas após isto começa a sessão.
+
+
+Diagrama de Arquitetura de Redes:
+[Cliente 1]       [Cliente 2]
+     |                 |
+     |                 |
+     v                 v
+[Servidor Relay da Unity]
+           |
+           v
+        [Host]
+
+
+## Webgrafia
+https://youtu.be/HWPKlpeZUjM?si=X6M31Svnu8Lcc2_s - Tutorial de Netcode for GameObjects
+
+https://youtu.be/msPNJ2cxWfw?si=SOKyX9Hld-GtDjW2 - Tutorial de Relay
+
+https://youtu.be/fRJlb4t_TXc?si=uwFQBfekkcQb8tIs - Tutorial de Relay, a maior parte do relay vem deste video, com algumas correções devido a mudanças da API.
 
 
 
