@@ -10,6 +10,7 @@
 ## Premissa do jogo
 É um jogo de corrida onde cada jogador está encarregue de gerir a estratégia do seu piloto.
 Dois jogadores competem para ganhar uma corrida de 50 voltas pelo Circuito de Catalunha/Barcelona, usado por campeonatos como F1 e MotoGP.
+(O jogo pode receber até 4 jogadores para teste, mas o jogo é feito para 2, apesar de poder ser extendido com poucas mudanças)
 
 ![Catalunya](MarkdownImages/Catalunya.jpg)
 
@@ -83,28 +84,15 @@ No script de relay, é feito um login anonimo e conexão aos serviços Unity, Cr
 
 Diagrama de Arquitetura de Redes:
 graph TD
-    subgraph Cliente
-        C1[Cliente 1]
-        C2[Cliente 2]
-        C3[Cliente 3]
-    end
+[Cliente 1]       [Cliente 2]
+     |                 |
+     |                 |
+     v                 v
+[Servidor Relay da Unity]
+           |
+           v
+        [Host]
 
-    subgraph Relay Server
-        RS[Relay Server]
-    end
-
-    subgraph Host
-        H[Host (Servidor do Jogo)]
-    end
-
-    C1 --> RS
-    C2 --> RS
-    C3 --> RS
-    RS --> H
-    H --> RS
-    RS --> C1
-    RS --> C2
-    RS --> C3
 
 
 
