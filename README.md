@@ -15,7 +15,52 @@ Dois jogadores competem para ganhar uma corrida de 50 voltas pelo Circuito de Ca
 
 A gameplay durante corridas é semelhante a jogos como F1 Manager, F1 Clash e Motorsport Manager.
 
-Os carros, representados por bolas coloridas inspiradas 
+Os carros começam parados na reta principal, estando o host em primeiro lugar, após ambos os jogadores estarem conectados começa a corrida, com ambos os jogadores nos pneus meédios.
+Ao começarem nos mesmos pneus, os jogadores começam também com a mesma velocidade.
+A velocidade vai diminuindo a cada checkpoint passado, pelo que jogadores devem trocar de pneus para obter um tempo final mais rápido que o seu adversário.
+Jogadores também têm a opção de dar "Push", isto aumenta a sua velocidade nas curvas, mas aumenta também a velocidade perdida por checkpoint.
+
+Os Jogadores não sabem se o outro vai parar nesta volta até a troca de pneus começar, pelo que estar em segundo lugar pode oferecer uma vantagem estratégica a nivel de informação obtida.
+
+## Como jogar
+
+Jogadores clicam num dos inputs de pneus para planear uma pit stop, esta será executada no fim da volta.
+Os Inputs de pneus são:
+S - Softs
+M - Mediums
+H - Hards
+
+Jogadores podem também clicar no P para ativar e desativar o modo "Push".
+
+## Como funciona a simulação
+Os carros, são bolas coloridas, inspiradas pelos verdadeiros icones usados pela transmissão oficial de F1 quando o traçado da pista é mostrado.
+
+![BroadcastBalls](MarkdownImages/BroadcastBalls.png)
+
+Estes têm uma variavel de velocidade pura e uma de degradação dos pneus, que juntas resultam na verdadeira velocidade.
+Nas curvas a velocidade pura é diminuida, este efeito é reduzido quando o jogador está no modo "Push".
+
+Existem três pneus, Softs, Mediums e Hards.
+
+Softs - Velocidade pura maior, Degradação maior.
+
+![Soft](MarkdownImages/Soft.png)
+
+Mediums - Velocidade pura normal, Degradação normal.
+
+![Medium](MarkdownImages/Medium.png)
+
+Hards - Velocidade pura menor, Degradação menor
+
+![Hard](MarkdownImages/Hard.png)
+
+A degradação é aplicada a cada checkpoint, logo, partes da pista com mais curvas, ou curvas mais longas, degradam mais os pneus.
+Um jogador que está a usar os Softs, será inicialmente o mais rápido, mas se não trocar de pneus mais cedo irá ser mais lento que os restantes
+
+Durante as trocas de pneus, os jogadores ficam parados por 5 segundos, sendo essencial coordenar as trocas, de modo a que o beneficio da troca de pneus seja superior aos 5 segundos da paragem, pelo menos até
+à próxima troca.
+
+Usar o modo "Push", aumenta a degradação, pelo que não deve estar sempre ativo, especialmente nos Softs.
 
 
 
