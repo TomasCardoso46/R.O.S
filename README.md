@@ -64,14 +64,17 @@ Usar o modo "Push", aumenta a degradação, pelo que não deve estar sempre ativ
 
 
 
-## How we solved it
-In paralel we made the actions taken by the agents, and the logic behind how they select which actions to perform.
-To acomplish this we made two versions of the simulation, one using Decision Trees and the other using State Machines.
-Both versions use the same seating system for stages and restaurants, with the difference being that for the stages the seats are invisible. The green area makes use of an addon to the seating system that spawns seats inside that area as far away as possible frome each other.
+## Funcionalidade Online
+Os jogadores começam uma sessão clicando no botão "Host", isto gera e mostra um código, que deverá ser passado a quem se quiser juntar.
+Clientes devem introduzir o código na caixa de texto e clicar no "Join" para se juntarem à sessão do jogador que produzio o código.
 
-With these systems we achieved good and believable results.
+O jogo usa Relay do unity, disponivel em "cloud.unity.com".
 
-## Methodology
+Os vários componentes usam o Netcode for GameObjects do unity
+
+As variáveis que diretamente impactam a visão do jogo ou velocidades, raceLap, tireLap, pitRequested, tireType, isPushing são sincronizadas apenas com o uso de NetworkVariable<T>
+
+
 
 ### Movement
 For this simulation we use cinematic movement, as the agents simply "slide" over the navmesh surface.
