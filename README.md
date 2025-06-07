@@ -72,7 +72,7 @@ O jogo usa Relay do unity, disponivel em "cloud.unity.com".
 
 Os vários componentes usam o Netcode for GameObjects do unity
 
-As variáveis que diretamente impactam a visão do jogo ou velocidades, raceLap, tireLap, pitRequested, tireType, isPushing são sincronizadas apenas com o uso de NetworkVariable<T>
+As variáveis que diretamente impactam a visão do jogo ou velocidades, raceLap, tireLap, pitRequested, tireType, isPushing são sincronizadas apenas com o uso de NetworkVariable< T >
 
 
 
