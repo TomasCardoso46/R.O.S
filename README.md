@@ -82,14 +82,30 @@ No script de relay, é feito um login anonimo e conexão aos serviços Unity, Cr
 
 
 Diagrama de Arquitetura de Redes:
-[Cliente 1]       [Cliente 2]
-     |                 |
-     |                 |
-     v                 v
-[Servidor Relay da Unity]
-           |
-           v
-        [Host]
+graph TD
+    subgraph Cliente
+        C1[Cliente 1]
+        C2[Cliente 2]
+        C3[Cliente 3]
+    end
+
+    subgraph Relay Server
+        RS[Relay Server]
+    end
+
+    subgraph Host
+        H[Host (Servidor do Jogo)]
+    end
+
+    C1 --> RS
+    C2 --> RS
+    C3 --> RS
+    RS --> H
+    H --> RS
+    RS --> C1
+    RS --> C2
+    RS --> C3
+
 
 
 ## Webgrafia
