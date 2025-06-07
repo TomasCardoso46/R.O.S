@@ -95,6 +95,39 @@ Diagrama de Arquitetura de Redes:
 ```
 
 
+Diagrama de Protocolo:
+```
+[Host]                               [Relay Server]                               [Cliente]
+
+   |                                       |                                           |
+   |-- CreateAllocationAsync() ----------->|                                           |
+   |                                       |                                           |
+   |<-- Allocation Info -------------------|                                           |
+   |                                       |                                           |
+   |-- BIND ------------------------------>|                                           |
+   |                                       |                                           |
+   |<-- BIND_RECEIVED ---------------------|                                           |
+   |                                       |                                           |
+   |-- GetJoinCodeAsync() ---------------->|                                           |
+   |                                       |                                           |
+   |<-- Join Code -------------------------|                                           |
+   |                                       |                                           |
+   |                                       |<-- JoinAllocationAsync(joinCode) --------|
+   |                                       |                                           |
+   |                                       |--> Allocation Info ----------------------|
+   |                                       |                                           |
+   |                                       |<-- BIND ---------------------------------|
+   |                                       |                                           |
+   |                                       |--> BIND_RECEIVED ------------------------|
+   |                                       |                                           |
+   |                                       |<-- CONNECT_REQUEST ----------------------|
+   |                                       |                                           |
+   |                                       |--> ACCEPTED -----------------------------|
+   |                                       |                                           |
+   |<-- RELAY (Data) ----------------------|-------------------------> RELAY (Data) -->|
+   |                                       |                                           |
+```
+
 
 
 ## Webgrafia
