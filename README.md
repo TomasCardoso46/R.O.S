@@ -66,33 +66,71 @@ Usar o modo "Push", aumenta a degradação, pelo que não deve estar sempre ativ
 
 
 ## Funcionalidade Online
-Os jogadores começam uma sessão clicando no botão "Host", isto gera e mostra um código, que deverá ser passado a quem se quiser juntar.
-Clientes devem introduzir o código na caixa de texto e clicar no "Join" para se juntarem à sessão do jogador que produzio o código.
+Processo de iniciar uma sessão:
+1. O host faz login anónimo nos serviços Unity.
+2. Um Allocation é criado via RelayService.CreateAllocationAsync.
+3. Um código de entrada é gerado GetJoinCodeAsync.
+4. O host define os dados de transporte DTLS SetRelayServerData.
+5. A sessão começa com NetworkManager.StartHost().
+6. Clientes entram com o código, fazendo então JoinAllocationAsync, seguido de StartClient().
+
 
 O jogo usa Relay do unity, disponivel em "cloud.unity.com".
 
-Os vários componentes usam o Netcode for GameObjects do unity
+O código é gerado pelo próprio serviço de relay do unity.
 
-As variáveis que diretamente impactam a visão do jogo ou velocidades, raceLap, tireLap, pitRequested, tireType, isPushing são sincronizadas apenas com o uso de NetworkVariable< T >.
+O Movimento dos carros é controlado por cada client no script PathFollower.cs.
+
+Todas as instâncias de carros têm um Network Transform que é responsável por sincronizar apenas as posições, em X, Y e Z.
+Não é necessário sincronizar as rotações, visto que os carros são apenas circulos.
+
+Todos os inputs são feitos localmente se o carro pertencer ao cliente.
+Os inputs são validados pelo servidor, mas estados do carro não têm qualquer tipo de proteção.
+Na visão do dono do carro, os seus estados são alterados, mas na visão de quem não é dono do carro apenas o movimento é alterado, que já estava sincronizado pelo Network Transform
+O Server sabe quando qualquer jogador quer trocar de pneus ou dar push, mas o cliente que não é dono do carro nem recebe essa informação, apenas vê os acontecimentos.
+
+![Transform](MarkdownImages/Transform.png)
 
 Inputs passam por um ServerRpc enquanto estado de vitória passa pelo ClientRpc.
 
-Metodo SpawnCarForClient instancia o carro do novo jogador tanto para o novo jogador como para o Host, assim seria possivel hipoteticamente extender o jogo para ter mais jogadores
+As variáveis que diretamente impactam a visão do jogo ou velocidades, raceLap, tireLap, pitRequested, tireType, isPushing são sincronizadas apenas com o uso de NetworkVariable< T >.
+
+Nesta versão do jogo, os textos relacionados aos estados do jogo de ambos os jogadores existem ao mesmo tempo nos dois clientes, sendo cada cliente apenas responsável por dar display ao UI do seu carro, verificando a ownership do mesmo.
+
+Metodo SpawnCarForClient instancia o carro do novo jogador tanto para o novo jogador como para o Host, assim seria possivel hipoteticamente extender o jogo para ter mais jogadores, seria ainda necessário alterar a maneira como a UI do jogo funciona.
 
 No script de relay, é feito um login anonimo e conexão aos serviços Unity, CreateRelay solicita uma alocação de servidor Relay, o transporte segue o protocolo DTLS, Apenas após isto começa a sessão.
 
 
 Diagrama de Arquitetura de Redes:
 ```
-[Cliente 1]         [Cliente 2]
-    |                   |
-    |                   |
-    v                   v
-[Servidor Relay da Unity]
-            |
-            v
-         [Host]
+              +----------------+
+              |  Unity Relay   |
+              |   (DTLS/UDP)   |
+              +--------+-------+
+                       |
+           +-----------+-----------+
+           |                       |
+     +-----v-----+           +-----v-----+
+     |   Host    |           |  Client 1 |
+     |(Server+UI)|           |(Client+UI)|
+     +-----+-----+           +-----+-----+
+           |                       |
+     +-----v-----+           +-----v-----+
+     | Netcode   |           | Netcode   |
+     | Transport |           | Transport |
+     +-----------+           +-----------+
+
+     +-----+-----+           +-----+-----+
+     | Game Logic|           | Game Logic|
+     | (Server)  |           | (Client)  |
+     +-----------+           +-----------+
+     | UI Local  |           | UI Local  |
+     +-----------+           +-----------+
+
 ```
+
+
 
 
 Diagrama de Protocolo:
