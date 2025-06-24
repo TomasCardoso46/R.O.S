@@ -166,8 +166,29 @@ Diagrama de Protocolo:
    |                                       |                                           |
 ```
 
-## Fun Fact
-Desligar o VPN antes de testar um jogo localmente é uma boa ideia!!!
+As duas principais dificuldades que tive ao longo do desenvolvimento foram os textos de vitória e a conexão por código.
+
+Os textos de vitória porque até ao momento, toda a informação mostrada ao cliente dependia apenas de si mesmo. Na altura tentei fazer da exata mesma maneira, mas mostrando a variavel de quem ja acabou a corrida.
+Eventualmente fiz com que os textos de vitória fossem duas entidades separadas, isto no entanto apenas funcionava quando o host acabava a corrida, independentemente da sua posição de chegada.
+Isto provavelmente acontecia porque as variaveis estavam a perguntar se era o server a correr o codigo em vez de garantir que era o owner do carro.
+Ainda há restos deste código no script RaceManager.cs
+Em retroespetiva, deveria simplesmente ter uma network variable de vencedor pertencente ao servidor, quando os carros acabassem iriam então os respetivos clientes pedir ao servidor para a alterar para serem eles os vencedores.
+Deveria ainda haver um check para garantir que só o primeiro faria isto. Isto poderia ser resolvido parando ambos os carros assim que um deles termina, e aceitar o pedido sem verificação, o que funcionaria se quisesse dar commit a ter apenas 2 jogadores.
+Caso queira ter mais, seria expectavel que os restantes corredores consigam ainda competir entre si pelos restantes lugares do podio, pelo que para isto poderia haver uma contagem de pedidos, sendo o primeiro pedido primeiro lugar, segundo pedido segundo lugar.... en que
+apenas a primeira atualiza o vencedor.
+
+A conexão por código porque ao seguir um dos tutoriais de relay, passei várias horas a tentar resolver uma linha que dava erro. Colei no google e não obtive resposta, no chatgpt também não, não sei se foi porque pesquisei as coisas erradas ou por a linha problemática poder estar
+certa em outros contextos, mas a realidade foi que eu estava a tentar misturar código de duas versões diferentes dos serviços de relay, pelo que um comentário no video foi o que me deu a resposta.
+"var relayServerData = new RelayServerData(allocation, "dtls");" precisava agora de ser "var relayServerData = AllocationUtils.ToRelayServerData(allocation, "dtls");".
+Felizmente ao resolver isto o jogo ficou logo a funcionar, foi o último código feito.
+
+
+
+## Fun Facts
+1. Desligar o VPN antes de testar um jogo localmente é uma boa ideia!!!
+
+2. Se o segundo jogador for disconectado por falha da internet (replicavel também ao ligar ou desligar VPN) o seu carro passará a ser propriedade do outro cliente, fazendo assim com que o dono da sessão tenha controlo sobre os dois carros.
+
 
 ## Conclusões tiradas do projeto
 Testar em LAN no unity é fácil e ajuda bastante.
