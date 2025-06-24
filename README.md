@@ -79,7 +79,12 @@ O jogo usa Relay do unity, disponivel em "cloud.unity.com".
 
 O código é gerado pelo próprio serviço de relay do unity.
 
-O Movimento dos carros é controlado por cada client no script PathFollower.cs.
+O movimento dos carros é controlado por cada client no script PathFollower.cs com base em seguir checkpoints de uma lista até chegar ao fim e repetir, apesar disto o prefab do carro em si é movido no servidor.
+Para outros jogadores verem as ações do meu carro basta o uso do Network Transform, pois nunca precisam de saber sobre os meus estados, pneus, pitting e pushing, precisam apenas de saber a minha posição sempre.
+
+As posições dos carros na visão de um cliente são interpoladas (ver fun fact 3).
+O host vê movimentos com pouca ou nada de interpolação por estar no seu próprio servidor.
+O cliente é também forçado a ver interpolação no seu próprio carro por ainda o ter de sincronizar no Network transform.
 
 Todas as instâncias de carros têm um Network Transform que é responsável por sincronizar apenas as posições, em X, Y e Z.
 Não é necessário sincronizar as rotações, visto que os carros são apenas circulos.
@@ -188,6 +193,8 @@ Felizmente ao resolver isto o jogo ficou logo a funcionar, foi o último código
 1. Desligar o VPN antes de testar um jogo localmente é uma boa ideia!!!
 
 2. Se o segundo jogador for disconectado por falha da internet (replicavel também ao ligar ou desligar VPN) o seu carro passará a ser propriedade do outro cliente, fazendo assim com que o dono da sessão tenha controlo sobre os dois carros.
+
+3. As mudanças de velocidade do jogo são instantaneas, não passam por um periodo de aceleração ou travagem, mas ao ver os movimentos quando interpolados, muitas vezes dá essa ilusão.
 
 
 ## Conclusões tiradas do projeto
